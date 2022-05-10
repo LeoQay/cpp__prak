@@ -232,10 +232,6 @@ std::vector<PolizItem>::const_iterator RegexParser::end() const
 }
 
 
-/*
- * ITER_STAR, ITER_PLUS, OR, CONCAT, DIGIT, CHAR, EMPTY
- */
-
 std::ostream & operator<< (std::ostream & stream, const PolizItem & obj)
 {
     switch (obj.kind) {
