@@ -9,6 +9,9 @@
 #include "token_stream_iterator.h"
 
 
+struct PolizItem { enum Kind { ITER_STAR, ITER_PLUS, OR, CONCAT, DIGIT, CHAR, EMPTY } kind; char repr; };
+
+
 class RegexParser
 {
 public:

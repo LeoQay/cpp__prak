@@ -4,8 +4,6 @@
 #include <stdexcept>
 
 
-struct PolizItem { enum Kind { ITER_STAR, ITER_PLUS, OR, CONCAT, DIGIT, CHAR, EMPTY } kind; char repr; };
-
 struct Token { enum Kind { OPEN, CLOSE, STAR, PLUS, BAR, DIGIT, CHAR, END } kind; char repr; };
 
 
