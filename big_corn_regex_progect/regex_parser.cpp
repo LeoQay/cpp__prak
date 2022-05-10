@@ -12,7 +12,9 @@ poliz(), bar_flag(false), concat_flag(false), is_empty(false) {}
 
 void RegexParser::parse(std::istream & _stream)
 {
+    /*
     poliz.clear();
+     */
 
     iterator = TokenStreamIterator(_stream);
 
