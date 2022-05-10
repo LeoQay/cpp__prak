@@ -9,7 +9,13 @@
 #include "token_stream_iterator.h"
 
 
-struct PolizItem { enum Kind { ITER_STAR, ITER_PLUS, OR, CONCAT, DIGIT, CHAR, EMPTY } kind; char repr; };
+struct PolizItem
+{
+    enum Kind { ITER_STAR, ITER_PLUS, OR, CONCAT, DIGIT, CHAR, EMPTY } kind;
+    char repr;
+
+    friend std::ostream & operator<< (std::ostream & stream, const PolizItem & obj);
+};
 
 
 class RegexParser
@@ -20,6 +26,7 @@ public:
 
     [[nodiscard]] std::vector<PolizItem>::const_iterator begin() const;
     [[nodiscard]] std::vector<PolizItem>::const_iterator end() const;
+    void print(std::ostream & stream, const char * sep = " ") const;
 private:
 
     void RegularExpression();

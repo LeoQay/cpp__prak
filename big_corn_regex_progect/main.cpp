@@ -20,6 +20,6 @@ int main()
         return 0;
     }
 
-    std::cout << "YES" << std::endl;
+    parser.print(std::cout, "\n");
     return 0;
 }

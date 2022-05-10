@@ -1,6 +1,7 @@
 #include <stdexcept>
 #include <vector>
 #include <iostream>
+#include <iterator>
 
 #include "regex_parser.h"
 
@@ -230,3 +231,44 @@ std::vector<PolizItem>::const_iterator RegexParser::end() const
     return poliz.end();
 }
 
+
+/*
+ * ITER_STAR, ITER_PLUS, OR, CONCAT, DIGIT, CHAR, EMPTY
+ */
+
+std::ostream & operator<< (std::ostream & stream, const PolizItem & obj)
+{
+    switch (obj.kind) {
+        case PolizItem::Kind::ITER_PLUS:
+            stream << "ITER_PLUS";
+            break;
+        case PolizItem::Kind::ITER_STAR:
+            stream << "ITER_STAR";
+            break;
+        case PolizItem::Kind::CHAR:
+            stream << obj.repr;
+            break;
+        case PolizItem::Kind::CONCAT:
+            stream << "CONCAT";
+            break;
+        case PolizItem::Kind::DIGIT:
+            stream << "DIGIT";
+            break;
+        case PolizItem::Kind::EMPTY:
+            stream << "EMPTY";
+            break;
+        case PolizItem::Kind::OR:
+            stream << "OR";
+            break;
+        default:
+            break;
+    }
+
+    return stream;
+}
+
+
+void RegexParser::print(std::ostream & stream, const char * sep) const
+{
+    std::copy(begin(), end(), std::ostream_iterator<PolizItem>(std::cout, sep));
+}
