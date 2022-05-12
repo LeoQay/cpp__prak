@@ -1,91 +1,10 @@
-#include <iostream>
 #include <string>
 #include <map>
 #include <unordered_map>
 #include <set>
-#include <vector>
-
-typedef std::multimap<std::string, std::string> grm_t;
-typedef std::multimap<std::string, std::pair<std::string, char>> dfa_t;
-typedef std::pair<std::string, char> dfa_rule_t;
-typedef std::unordered_map<std::string, std::unordered_map<char, std::string>>
-dfa_ds_t;
 
 
-grm_t g()
-{
-    return
-    {
-        {"S", "Aa"},
-        {"S", "a"},
-        {"A", "Aa"},
-        {"A", "Ab"},
-        {"A", "a"},
-        {"A", "b"}
-    };
-}
-
-
-class LeftDFAMgr
-{
-public:
-    explicit LeftDFAMgr(const grm_t & grm);
-    virtual ~LeftDFAMgr() = default;
-    bool check(const std::string & str);
-private:
-    void convert_dfa_to_ds();
-
-    void do_step(const grm_t & grm);
-
-    std::string get_all_values(const grm_t & grm,
-                               const std::string & vertex,
-                               char terminal);
-
-    std::set<char> get_non_terminal_all_values(const grm_t & grm,
-                                            char non_terminal,
-                                            char terminal);
-
-    void collect_terminals(const grm_t & grm);
-
-    dfa_t dfa;
-    dfa_ds_t ds;
-
-    std::string start_sym = "H";
-
-    // не терминалы или их последовательности
-    // записываются сюда после просмотра
-    std::set<std::string> watched;
-    // очередь не терминалов на просмотр
-    std::set<std::string> que;
-    // конечные не терминалы
-    std::set<std::string> finite;
-
-    // терминалы
-    std::set<char> terminals;
-};
-
-
-
-int main()
-{
-    LeftDFAMgr mgr(g());
-
-    std::string str;
-    while (getline(std::cin, str))
-    {
-        if (mgr.check(str))
-        {
-            std::cout << "YES" << std::endl;
-        }
-        else
-        {
-            std::cout << "NO" << std::endl;
-        }
-    }
-
-    return 0;
-}
-
+#include "left_grm_to_dfa.h"
 
 
 LeftDFAMgr::LeftDFAMgr(const grm_t & grm)
@@ -176,7 +95,7 @@ LeftDFAMgr::get_non_terminal_all_values(const grm_t & grm,
     for (auto [nt, value] : grm)
     {
         if ((value.size() == 1 && non_terminal == 'H' && value[0] == terminal) ||
-        (value.size() == 2 && value[0] == non_terminal && value[1] == terminal))
+            (value.size() == 2 && value[0] == non_terminal && value[1] == terminal))
         {
             ret.insert(nt[0]);
         }

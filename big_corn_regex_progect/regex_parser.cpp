@@ -6,7 +6,6 @@
 #include "regex_parser.h"
 
 
-
 RegexParser::RegexParser() : iterator(),
 poliz(), bar_flag(false), concat_flag(false), is_empty(false) {}
 

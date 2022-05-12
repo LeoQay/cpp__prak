@@ -3,7 +3,7 @@ project(cpp__prak)
 
 set(CMAKE_CXX_STANDARD 20)
 
-add_executable(cpp_exec black.cpp)
+add_executable(cpp_exec 8/83.cpp)
 
 add_executable(test A/test_A3.cpp)
 
