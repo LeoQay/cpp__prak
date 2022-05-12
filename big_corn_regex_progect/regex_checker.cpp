@@ -3,6 +3,7 @@
 #include <stdexcept>
 
 #include "regex_checker.h"
+#include "left_grm_to_dfa.h"
 
 
 RegexChecker::RegexChecker(const std::string & re) : parser_()

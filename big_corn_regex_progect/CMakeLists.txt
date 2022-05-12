@@ -7,7 +7,7 @@ add_executable(regex_exec B2.cpp
         regex_parser.cpp regex_parser.h
         token_stream_iterator.cpp token_stream_iterator.h
         regex_checker.cpp regex_checker.h
-        left_grm_to_dfa.cpp left_grm_to_dfa.h)
+        left_grm_to_dfa.cpp left_grm_to_dfa.h delete_empty_rules.cpp delete_empty_rules.h grm_production.cpp grm_production.h)
 
 add_executable(test_regex test.cpp
         regex_parser.cpp regex_parser.h
