@@ -17,6 +17,7 @@ add_executable(test_regex test.cpp
         token_stream_iterator.cpp token_stream_iterator.h
         regex_checker.cpp regex_checker.h
         left_grm_to_dfa.cpp left_grm_to_dfa.h
+        delete_empty_rules.cpp delete_empty_rules.h
         global_typedef.h
         delete_bad.cpp delete_bad.h)
 
