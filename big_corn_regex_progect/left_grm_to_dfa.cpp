@@ -105,7 +105,7 @@ void LeftDFAMgr::convert_dfa_to_grm()
     for (auto & [left, right] : dfa)
     {
         sequence_t temp;
-        if (!(right.first.size() == 1 && right.first.arr[0] == Symbol(NOT_TERM, 0)))
+        if (!(right.first.size() == 1 && right.first.arr[0].is_H()))
         {
             temp.arr.push_back(new_names[right.first]);
         }

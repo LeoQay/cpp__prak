@@ -21,7 +21,7 @@ private:
     void delete_empty_rules(grm_t & grm);
     bool all_in_X(const sequence_t & chain);
     // step 3
-
+    void restore_empty_start(grm_t & grm);
     // step 4
     void update_rules(grm_t & grm);
     void add_all_combinations(grm_t & grm, const pair_t & rule);

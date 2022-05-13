@@ -30,6 +30,8 @@ struct Symbol
     bool operator< (const Symbol & other) const;
     bool operator!= (const Symbol & other) const;
 
+    bool is_H() const;
+    bool is_empty() const;
 
     explicit Symbol(char sym);
     explicit Symbol(SymbolType kind_ = SymbolType::TERMINAL, int repr_ = '\0');
@@ -38,6 +40,7 @@ struct Symbol
 
 #define TERM Symbol::SymbolType::TERMINAL
 #define NOT_TERM Symbol::SymbolType::NOT_TERMINAL
+
 
 
 struct RightRuleContextFreeGrm

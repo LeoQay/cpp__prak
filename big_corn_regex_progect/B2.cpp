@@ -5,6 +5,8 @@
 #include "regex_checker.h"
 #include "global_typedef.h"
 #include "left_grm_to_dfa.h"
+#include "delete_empty_rules.h"
+#include "delete_bad.h"
 
 
 grm_t g()
@@ -39,8 +41,12 @@ grm_t g()
 int main()
 {
     LeftDFAMgr mgr;
-    grm_t grm = mgr.build_dfa(g());
-
+    mgr.build_dfa(g());
+    grm_t grm = mgr.result;
+    DeleteEmptyRules del;
+    del.run(grm);
+    ProductionContextFreeGrammar producer;
+    producer.run(grm);
 
     std::string current;
     if (!getline(std::cin, current))

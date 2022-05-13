@@ -42,6 +42,15 @@ bool Symbol::operator< (const Symbol & other) const
     return !operator>=(other);
 }
 
+bool Symbol::is_H() const
+{
+    return kind == NOT_TERM && repr == 0;
+}
+
+bool Symbol::is_empty() const
+{
+    return kind == TERM && repr == 0;
+}
 
 
 bool RightRuleContextFreeGrm::operator== (const RightRuleContextFreeGrm & other) const

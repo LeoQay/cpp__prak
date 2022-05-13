@@ -1,6 +1,5 @@
 #include <string>
 #include <map>
-#include <unordered_set>
 #include <set>
 #include <vector>
 
@@ -10,13 +9,11 @@
 
 void DeleteEmptyRules::run(grm_t & grm)
 {
-    clear();
-
     build_X(grm);
 
     delete_empty_rules(grm);
 
-
+    restore_empty_start(grm);
 
     update_rules(grm);
 }
@@ -29,16 +26,14 @@ void DeleteEmptyRules::build_X(const grm_t & grm)
     {
         count = 0;
 
-        for (auto it = grm.grm.begin(); it != grm.grm.end();)
+        for (const auto & it : grm.grm)
         {
-            auto cur = it;
-            it++;
-
-            if (X.find(cur->first) == X.end() &&
-                (cur->second.empty() || all_in_X(cur->second)))
+            if (X.find(it.first) == X.end() &&
+                (it.second.size() == 1 && it.second.arr[0].is_empty() ||
+                all_in_X(it.second)))
             {
                 count++;
-                X.insert(cur->first);
+                X.insert(it.first);
             }
         }
     }
@@ -51,7 +46,7 @@ void DeleteEmptyRules::delete_empty_rules(grm_t & grm)
         auto cur = it;
         it++;
 
-        if (cur->second.empty())
+        if (cur->second.size() == 1 && cur->second.arr[0].is_empty())
         {
             grm.grm.erase(cur);
         }
@@ -70,8 +65,9 @@ bool DeleteEmptyRules::all_in_X(const sequence_t & chain)
 void DeleteEmptyRules::update_rules(grm_t & grm)
 {
     grm_t new_grm;
+    new_grm.start = grm.start;
 
-    for (auto & it : grm)
+    for (auto & it : grm.grm)
     {
         add_all_combinations(new_grm, it);
     }
@@ -159,5 +155,19 @@ sequence_t DeleteEmptyRules::make_combination(
 
     result.arr.insert(result.arr.end(), alpha[len].arr.begin(), alpha[len].arr.end());
     return result;
+}
+
+
+void DeleteEmptyRules::restore_empty_start(grm_t & grm)
+{
+    for (auto & sym : grm.start)
+    {
+        if (X.find(sym) != X.end())
+        {
+            sequence_t seq;
+            seq.arr.emplace_back(Symbol(TERM, 0));
+            grm.grm.emplace(sym, seq);
+        }
+    }
 }
 
