@@ -49,6 +49,9 @@ struct RightRuleContextFreeGrm
 
     [[nodiscard]] std::size_t find(const Symbol & sym) const;
 
+    void erase(std::size_t pos, std::size_t n);
+    RightRuleContextFreeGrm substr(std::size_t pos, std::size_t n) const;
+
     bool operator> (const RightRuleContextFreeGrm & other) const;
     bool operator== (const RightRuleContextFreeGrm & other) const;
     bool operator>= (const RightRuleContextFreeGrm & other) const;
@@ -67,9 +70,7 @@ struct ContextFreeGrm
 
 using sequence_t = RightRuleContextFreeGrm;
 using grm_t = ContextFreeGrm;
-
-
-
+using pair_t = std::pair<Symbol, RightRuleContextFreeGrm>;
 
 
 #endif //CPP__PRAK_GLOBAL_TYPEDEF_H

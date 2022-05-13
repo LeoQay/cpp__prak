@@ -8,7 +8,7 @@
 
 
 
-void NoShortContextFreeGrammar::run(grm_t & grm)
+void DeleteEmptyRules::run(grm_t & grm)
 {
     clear();
 
@@ -16,12 +16,12 @@ void NoShortContextFreeGrammar::run(grm_t & grm)
 
     delete_empty_rules(grm);
 
-    add_new_start_sym(grm);
+
 
     update_rules(grm);
 }
 
-void NoShortContextFreeGrammar::build_X(const grm_t & grm)
+void DeleteEmptyRules::build_X(const grm_t & grm)
 {
     int count = 1;
 
@@ -29,7 +29,7 @@ void NoShortContextFreeGrammar::build_X(const grm_t & grm)
     {
         count = 0;
 
-        for (auto it = grm.begin(); it != grm.end();)
+        for (auto it = grm.grm.begin(); it != grm.grm.end();)
         {
             auto cur = it;
             it++;
@@ -44,70 +44,30 @@ void NoShortContextFreeGrammar::build_X(const grm_t & grm)
     }
 }
 
-void NoShortContextFreeGrammar::delete_empty_rules(grm_t & grm)
+void DeleteEmptyRules::delete_empty_rules(grm_t & grm)
 {
-    for (auto it = grm.begin(); it != grm.end();)
+    for (auto it = grm.grm.begin(); it != grm.grm.end();)
     {
         auto cur = it;
         it++;
 
         if (cur->second.empty())
         {
-            grm.erase(cur);
+            grm.grm.erase(cur);
         }
     }
 }
 
-bool NoShortContextFreeGrammar::all_in_X(const std::string & str)
+bool DeleteEmptyRules::all_in_X(const sequence_t & chain)
 {
-    return std::all_of(str.begin(), str.end(),
-                       [this] (char sym)
+    return std::all_of(chain.arr.begin(), chain.arr.end(),
+                       [this] (Symbol sym)
                        {
-                           std::string s = "_";
-                           s[0] = sym;
-                           return X.find(s) != X.end();
+                           return X.find(sym) != X.end();
                        });
 }
 
-void NoShortContextFreeGrammar::add_new_start_sym(grm_t & grm)
-{
-    if (X.find(old_start) == X.end())
-    {
-        rename_start_sym(grm);
-    }
-    else
-    {
-        add_new_start_rules(grm);
-    }
-}
-
-void NoShortContextFreeGrammar::add_new_start_rules(grm_t & grm)
-{
-    grm.insert(rule_t(new_start, old_start));
-    grm.insert(rule_t(new_start, ""));
-}
-
-void NoShortContextFreeGrammar::rename_start_sym(grm_t & grm)
-{
-    for (auto & rule : grm)
-    {
-        replace_start_sym(const_cast<std::string &>(rule.first));
-        replace_start_sym(const_cast<std::string &>(rule.second));
-    }
-}
-
-void NoShortContextFreeGrammar::replace_start_sym(std::string & str)
-{
-    for (char & sym : str)
-    {
-        if (sym == old_start[0])
-        {
-            sym = new_start[0];
-        }
-    }
-}
-
-void NoShortContextFreeGrammar::update_rules(grm_t & grm)
+void DeleteEmptyRules::update_rules(grm_t & grm)
 {
     grm_t new_grm;
 
@@ -119,17 +79,17 @@ void NoShortContextFreeGrammar::update_rules(grm_t & grm)
     grm = new_grm;
 }
 
-void NoShortContextFreeGrammar::add_all_combinations(grm_t & grm, const rule_t & rule)
+void DeleteEmptyRules::add_all_combinations(grm_t & grm, const pair_t & rule)
 {
-    std::vector<std::string> alpha;
-    std::vector<std::string> from_X;
+    std::vector<sequence_t> alpha;
+    std::vector<sequence_t> from_X;
 
-    std::string right = rule.second;
+    sequence_t right = rule.second;
 
     alpha.push_back(parse_alpha(right));
     if (right.empty())
     {
-        grm.insert(rule);
+        grm.grm.insert(rule);
         return;
     }
 
@@ -140,7 +100,7 @@ void NoShortContextFreeGrammar::add_all_combinations(grm_t & grm, const rule_t &
     }
 
     bool all_empty = std::all_of(alpha.begin(), alpha.end(),
-                                 [] (std::string & s)
+                                 [] (sequence_t & s)
                                  { return s.empty(); });
 
     int start = all_empty ? 1 : 0;
@@ -148,82 +108,56 @@ void NoShortContextFreeGrammar::add_all_combinations(grm_t & grm, const rule_t &
 
     for (int i = start; i < amount; i++)
     {
-        grm.insert(
-        rule_t(rule.first, make_combination(grm, alpha, from_X, i))
+        grm.grm.emplace(
+            rule.first, make_combination(grm, alpha, from_X, i)
         );
     }
 }
 
-std::string NoShortContextFreeGrammar::parse_alpha(std::string & right)
+sequence_t DeleteEmptyRules::parse_alpha(sequence_t & right)
 {
     size_t pos = 0, len = right.size();
 
-    while (pos < len && X.find(right.substr(pos, 1)) == X.end())
+    while (pos < len && X.find(right.arr[pos]) == X.end())
     {
         pos++;
     }
 
-    std::string ret = right.substr(0, pos);
+    sequence_t ret = right.substr(0, pos);
     right.erase(0, pos);
     return ret;
 }
 
-std::string NoShortContextFreeGrammar::parse_X(std::string & right)
+sequence_t DeleteEmptyRules::parse_X(sequence_t & right)
 {
-    if (right.empty())
-    {
-        throw std::exception();
-    }
-    std::string ret = right.substr(0, 1);
-
-    if (X.find(ret) == X.end())
-    {
-        throw std::exception();
-    }
-
+    sequence_t ret = right.substr(0, 1);
     right.erase(0, 1);
     return ret;
 }
 
-std::string NoShortContextFreeGrammar::make_combination(grm_t & grm,
-                                                        stack_t & alpha,
-                                                        stack_t & from_X,
-                                                        int mask)
+sequence_t DeleteEmptyRules::make_combination(
+        grm_t & grm,
+        std::vector<sequence_t> & alpha,
+        std::vector<sequence_t> & from_X,
+        int mask
+)
 {
     size_t len = from_X.size();
     size_t alpha_len = alpha.size();
 
-    if (len == 0)
-    {
-        // if in string doesn't exist non-terminals from X
-        // this method couldn't be launched
-        throw std::exception();
-    }
-
-    if (len + 1 != alpha_len)
-    {
-        // logic error, wrong stacks
-        throw std::exception();
-    }
-
-    std::string result;
+    sequence_t result;
 
     for (size_t i = 0; i < len; i++)
     {
-        result += alpha[i];
+        result.arr.insert(result.arr.end(), alpha[i].arr.begin(), alpha[i].arr.end());
         if ((mask & 1) == 1)
         {
-            result += from_X[i];
+            result.arr.insert(result.arr.end(), from_X[i].arr.begin(), from_X[i].arr.end());
         }
         mask >>= 1;
     }
 
-    result += alpha[len];
+    result.arr.insert(result.arr.end(), alpha[len].arr.begin(), alpha[len].arr.end());
     return result;
-}
-
-void NoShortContextFreeGrammar::clear()
-{
-    X.clear();
 }
 

@@ -102,3 +102,25 @@ std::size_t RightRuleContextFreeGrm::find(const Symbol & sym) const
     }
     return -1;
 }
+
+void RightRuleContextFreeGrm::erase(std::size_t pos, std::size_t n)
+{
+    for (std::size_t i = pos + n; i < arr.size(); i++)
+    {
+        arr[i - n] = arr[i];
+    }
+
+    arr.resize(arr.size() - n);
+}
+
+RightRuleContextFreeGrm
+RightRuleContextFreeGrm::substr(std::size_t pos, std::size_t n) const
+{
+    RightRuleContextFreeGrm ret;
+    for (std::size_t i = pos + n; i < arr.size(); i++)
+    {
+        ret.arr[i - n - pos] = arr[i];
+    }
+    return ret;
+}
+
