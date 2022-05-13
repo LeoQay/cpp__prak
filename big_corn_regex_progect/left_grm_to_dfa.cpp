@@ -1,18 +1,17 @@
 #include <string>
 #include <map>
-#include <unordered_map>
 #include <set>
-
 
 #include "left_grm_to_dfa.h"
 
 
-LeftDFAMgr::LeftDFAMgr(const grm_t & grm)
-: dfa(), ds(), watched(), que(), finite(), terminals()
+grm_t LeftDFAMgr::build_dfa(const grm_t & grm)
 {
     collect_terminals(grm);
 
-    que.insert(start_sym);
+    sequence_t seq;
+    seq.arr.push_back(start);
+    que.insert(seq);
 
     while (!que.empty())
     {
@@ -20,16 +19,20 @@ LeftDFAMgr::LeftDFAMgr(const grm_t & grm)
     }
 
     convert_dfa_to_ds();
+
+
+    // i must return left dfa grm
 }
+
 
 void LeftDFAMgr::do_step(const grm_t & grm)
 {
-    std::string current = *que.begin();
+    sequence_t current = *que.begin();
     que.erase(current);
 
-    for (char terminal : terminals)
+    for (Symbol terminal : terminals)
     {
-        std::string value = get_all_values(grm, current, terminal);
+        sequence_t value = get_all_values(grm, current, terminal);
 
         if (!value.empty())
         {
@@ -43,61 +46,41 @@ void LeftDFAMgr::do_step(const grm_t & grm)
     }
 
     watched.insert(current);
-
-    if (current.find('S') < current.size())
-    {
-        finite.insert(current);
-    }
 }
 
-void LeftDFAMgr::collect_terminals(const grm_t & grm)
+sequence_t LeftDFAMgr::get_all_values(const grm_t & grm,
+                                      const sequence_t & vertex,
+                                      Symbol terminal)
 {
-    for (auto & rule : grm)
-    {
-        for (char sym : rule.second)
-        {
-            if (!(sym >= 'A' && sym <= 'Z'))
-            {
-                terminals.insert(sym);
-            }
-        }
-    }
-}
+    std::set<Symbol> values;
 
-std::string
-LeftDFAMgr::get_all_values(const grm_t & grm,
-                           const std::string & vertex,
-                           char terminal)
-{
-    std::set<char> values;
-
-    for (char sym : vertex)
+    for (auto & sym : vertex.arr)
     {
-        std::set<char> cur = get_non_terminal_all_values(grm, sym, terminal);
+        std::set<Symbol> cur = get_non_terminal_all_values(grm, sym, terminal);
         values.insert(cur.begin(), cur.end());
     }
 
-    std::string ret;
-    for (char sym : values)
+    sequence_t ret;
+    for (auto & sym : values)
     {
-        ret += sym;
+        ret.arr.push_back(sym);
     }
     return ret;
 }
 
-std::set<char>
+std::set<Symbol>
 LeftDFAMgr::get_non_terminal_all_values(const grm_t & grm,
-                                        char non_terminal,
-                                        char terminal)
+                                        Symbol non_terminal,
+                                        Symbol terminal)
 {
-    std::set<char> ret;
+    std::set<Symbol> ret;
 
-    for (auto [nt, value] : grm)
+    for (auto & [nt, value] : grm.grm)
     {
-        if ((value.size() == 1 && non_terminal == 'H' && value[0] == terminal) ||
-            (value.size() == 2 && value[0] == non_terminal && value[1] == terminal))
+        if ((value.size() == 1 && non_terminal == start && value.arr[0] == terminal) ||
+            (value.size() == 2 && value.arr[0] == non_terminal && value.arr[1] == terminal))
         {
-            ret.insert(nt[0]);
+            ret.insert(nt);
         }
     }
 
@@ -112,33 +95,16 @@ void LeftDFAMgr::convert_dfa_to_ds()
     }
 }
 
-bool LeftDFAMgr::check(const std::string & str)
+void LeftDFAMgr::collect_terminals(const grm_t & grm)
 {
-    std::string current_state = "H";
-    std::string temp = str;
-
-    if (terminals.find('_') != terminals.end())
+    for (auto & rule : grm.grm)
     {
-        temp += '_';
-    }
-
-    while (true)
-    {
-        if (temp.empty())
+        for (auto & sym : rule.second.arr)
         {
-            return finite.find(current_state) != finite.end();
+            if (sym.kind == TERM)
+            {
+                terminals.insert(sym);
+            }
         }
-
-        char cur_sym = temp[0];
-        temp.erase(0, 1);
-
-        auto & edges = ds[current_state];
-
-        if (edges.find(cur_sym) == edges.end())
-        {
-            return false;
-        }
-
-        current_state = edges[cur_sym];
     }
 }

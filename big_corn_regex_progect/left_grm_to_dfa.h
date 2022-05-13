@@ -1,55 +1,52 @@
 #ifndef CPP__PRAK_LEFT_GRM_TO_DFA_H
 #define CPP__PRAK_LEFT_GRM_TO_DFA_H
 
-
 #include <string>
 #include <map>
-#include <unordered_map>
 #include <set>
 
+#include "global_typedef.h"
 
-using grm_t = std::multimap<std::string, std::string>;
-using dfa_t = std::multimap<std::string, std::pair<std::string, char>>;
-using dfa_rule_t = std::pair<std::string, char>;
-using dfa_ds_t = std::unordered_map<std::string, std::unordered_map<char, std::string>>;
+
+using dfa_t = std::multimap<sequence_t, std::pair<sequence_t, Symbol>>;
+using dfa_rule_t = std::pair<sequence_t, Symbol>;
+using dfa_ds_t = std::map<sequence_t, std::map<Symbol, sequence_t>>;
 
 
 class LeftDFAMgr
 {
 public:
-    explicit LeftDFAMgr(const grm_t & grm);
-    virtual ~LeftDFAMgr() = default;
-    bool check(const std::string & str);
+    grm_t build_dfa(const grm_t & grm);
 private:
     void convert_dfa_to_ds();
 
     void do_step(const grm_t & grm);
 
-    std::string get_all_values(const grm_t & grm,
-                               const std::string & vertex,
-                               char terminal);
+    sequence_t get_all_values(const grm_t & grm,
+                              const sequence_t & vertex,
+                              Symbol terminal);
 
-    std::set<char> get_non_terminal_all_values(const grm_t & grm,
-                                               char non_terminal,
-                                               char terminal);
+    std::set<Symbol> get_non_terminal_all_values(const grm_t & grm,
+                                                Symbol non_terminal,
+                                                Symbol terminal);
 
     void collect_terminals(const grm_t & grm);
+
+    Symbol start = Symbol(NOT_TERM, 0);
 
     dfa_t dfa;
     dfa_ds_t ds;
 
-    std::string start_sym = "H";
-
     // не терминалы или их последовательности
     // записываются сюда после просмотра
-    std::set<std::string> watched;
+    std::set<sequence_t> watched;
     // очередь не терминалов на просмотр
-    std::set<std::string> que;
+    std::set<sequence_t> que;
     // конечные не терминалы
-    std::set<std::string> finite;
+    std::set<sequence_t> finite;
 
     // терминалы
-    std::set<char> terminals;
+    std::set<Symbol> terminals;
 };
 
 

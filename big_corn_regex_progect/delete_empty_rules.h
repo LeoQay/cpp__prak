@@ -12,7 +12,6 @@
 typedef std::pair<std::string, std::string> rule_t;
 typedef std::multimap<std::string, std::string> grm_t;
 typedef std::unordered_set<std::string> set_t;
-typedef std::set<char> set_sym_t;
 typedef std::vector<std::string> stack_t;
 
 
