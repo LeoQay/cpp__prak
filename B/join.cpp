@@ -5,6 +5,7 @@
 #include <iostream>
 #include <sstream>
 
+#include "regex_parser.h"
 
 
 struct Symbol
@@ -937,32 +938,48 @@ grm_(), dfa_(), parser_(), stack_()
         throw std::runtime_error("INCORRECT REGEX");
     }
 
+    int star_cnt = 0, plus_cnt = 0;
+
     for (auto it : parser_)
     {
         switch (it.kind)
         {
             case PolizItem::Kind::CHAR:
+                star_cnt = plus_cnt = 0;
                 exec_char(it.repr);
                 break;
             case PolizItem::Kind::DIGIT:
+                star_cnt = plus_cnt = 0;
                 exec_digit();
                 break;
             case PolizItem::Kind::CONCAT:
+                star_cnt = plus_cnt = 0;
                 exec_concat();
                 break;
             case PolizItem::Kind::OR:
+                star_cnt = plus_cnt = 0;
                 exec_or();
                 break;
             case PolizItem::Kind::ITER_STAR:
-                exec_iter_star();
+                if (star_cnt == 0)
+                {
+                    exec_iter_star();
+                }
+                star_cnt++;
                 break;
             case PolizItem::Kind::ITER_PLUS:
-                exec_iter_plus();
+                if (star_cnt == 0 && plus_cnt == 0)
+                {
+                    exec_iter_plus();
+                }
+                plus_cnt++;
                 break;
             case PolizItem::Kind::EMPTY:
+                star_cnt = plus_cnt = 0;
                 exec_empty();
                 break;
             default:
+                star_cnt = plus_cnt = 0;
                 break;
         }
     }
