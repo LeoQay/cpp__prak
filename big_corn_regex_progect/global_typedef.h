@@ -30,8 +30,8 @@ struct Symbol
     bool operator< (const Symbol & other) const;
     bool operator!= (const Symbol & other) const;
 
-    bool is_H() const;
-    bool is_empty() const;
+    [[nodiscard]] bool is_H() const;
+    [[nodiscard]] bool is_empty() const;
 
     explicit Symbol(char sym);
     explicit Symbol(SymbolType kind_ = SymbolType::TERMINAL, int repr_ = '\0');
@@ -53,7 +53,7 @@ struct RightRuleContextFreeGrm
     [[nodiscard]] std::size_t find(const Symbol & sym) const;
 
     void erase(std::size_t pos, std::size_t n);
-    RightRuleContextFreeGrm substr(std::size_t pos, std::size_t n) const;
+    [[nodiscard]] RightRuleContextFreeGrm substr(std::size_t pos, std::size_t n) const;
 
     bool operator> (const RightRuleContextFreeGrm & other) const;
     bool operator== (const RightRuleContextFreeGrm & other) const;

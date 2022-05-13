@@ -24,6 +24,8 @@ public:
     void exec_iter_star();
 
 private:
+    static void process_grm(grm_t & grm);
+
     RegexParser parser_;
     std::vector<grm_t> stack_;
     static const int digit_repr;
