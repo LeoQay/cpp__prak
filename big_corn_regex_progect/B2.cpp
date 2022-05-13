@@ -4,7 +4,7 @@
 
 #include "regex_checker.h"
 
-
+/*
 grm_t g()
 {
     grm_t sm;
@@ -32,12 +32,11 @@ grm_t g()
 
     return sm;
 }
+*/
 
 
 int main()
 {
-
-
     std::string current;
     if (!getline(std::cin, current))
     {

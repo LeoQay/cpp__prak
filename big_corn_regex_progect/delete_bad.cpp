@@ -89,13 +89,14 @@ void NoChildContextFreeGrammar::do_delete_sym(grm_t & grm, Symbol sym)
 {
     for (auto it = grm.grm.begin(); it != grm.grm.end();)
     {
-        auto cur = it;
-        it++;
-
-        if (cur->first == sym ||
-        std::find(cur->second.arr.begin(), cur->second.arr.end(), sym) != cur->second.arr.end())
+        if (it->first == sym ||
+        std::find(it->second.arr.begin(), it->second.arr.end(), sym) != it->second.arr.end())
         {
-            grm.grm.erase(cur);
+            it = grm.grm.erase(it);
+        }
+        else
+        {
+            ++it;
         }
     }
 }
@@ -183,13 +184,14 @@ void NoAvailableContextFreeGrammar::do_delete_sym(grm_t & grm, Symbol sym)
 {
     for (auto it = grm.grm.begin(); it != grm.grm.end();)
     {
-        auto cur = it;
-        it++;
-
-        if (cur->first == sym ||
-        std::find(cur->second.arr.begin(), cur->second.arr.end(), sym) != cur->second.arr.end())
+        if (it->first == sym ||
+        std::find(it->second.arr.begin(), it->second.arr.end(), sym) != it->second.arr.end())
         {
-            grm.grm.erase(cur);
+            it = grm.grm.erase(it);
+        }
+        else
+        {
+            ++it;
         }
     }
 }

@@ -126,9 +126,15 @@ RightRuleContextFreeGrm
 RightRuleContextFreeGrm::substr(std::size_t pos, std::size_t n) const
 {
     RightRuleContextFreeGrm ret;
-    for (std::size_t i = pos + n; i < arr.size(); i++)
+
+    if (n == 0)
     {
-        ret.arr[i - n - pos] = arr[i];
+        return ret;
+    }
+
+    for (std::size_t i = pos; i < pos + n; i++)
+    {
+        ret.arr.push_back(arr[i]);
     }
     return ret;
 }

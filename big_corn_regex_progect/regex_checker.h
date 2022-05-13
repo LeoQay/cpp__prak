@@ -8,6 +8,9 @@
 #include "global_typedef.h"
 
 
+using usefull_dfa_t = std::map<Symbol, std::map<Symbol, Symbol>>;
+
+
 class RegexChecker
 {
 public:
@@ -26,13 +29,19 @@ public:
 private:
     static void process_grm(grm_t & grm);
 
+    void build_dfa();
+
+    static bool is_empty(const grm_t & grm);
+    static bool is_empty_chain(const grm_t & grm);
+
+    grm_t grm_;
+    usefull_dfa_t dfa_;
+
     RegexParser parser_;
     std::vector<grm_t> stack_;
     static const int digit_repr;
 };
 
-
-const int RegexChecker::digit_repr = 10000;
 
 
 #endif //CPP__PRAK_REGEX_CHECKER_H
