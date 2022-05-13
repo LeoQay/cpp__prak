@@ -54,14 +54,58 @@ RegexChecker::RegexChecker(const std::string & re) : parser_()
     grm_ = stack_[0];
     stack_.pop_back();
 
+    if (is_empty(grm_))
+    {
+        Symbol sym = Symbol(NOT_TERM, Symbol::next_name());
+        grm_.start.insert(sym);
+        sequence_t seq;
+        seq.arr.emplace_back(TERM, 0);
+        grm_.grm.emplace(sym, seq);
+    }
+
     build_dfa();
 }
 
 
 bool RegexChecker::check(const std::string & str)
 {
-    Symbol cur_state = Symbol(NOT_TERM, 0);
+    std::string rev = str;
+    std::reverse(rev.begin(), rev.end());
 
+    return check_inside(Symbol(NOT_TERM, 0), rev);
+}
+
+
+bool RegexChecker::check_inside(Symbol cur_state, const std::string & str)
+{
+    if (str.empty() && grm_.start.find(cur_state) != grm_.start.end())
+    {
+        return true;
+    }
+
+    auto & paths = dfa_[cur_state];
+
+    for (auto it : paths)
+    {
+        if (!str.empty() &&
+        (it.first.repr == str[0] ||
+        (it.first.repr == digit_repr && std::isdigit(str[0]))))
+        {
+            if (check_inside(it.second, str.substr(1)))
+            {
+                return true;
+            }
+        }
+        else if (it.first.repr == 0)
+        {
+            if (check_inside(it.second, str.substr(0)))
+            {
+                return true;
+            }
+        }
+    }
+
+    return false;
 }
 
 
@@ -152,6 +196,18 @@ void RegexChecker::exec_concat()
 
     grm_t res;
 
+    if (is_empty(a))
+    {
+        stack_.push_back(b);
+        return;
+    }
+
+    if (is_empty(b))
+    {
+        stack_.push_back(a);
+        return;
+    }
+
     res.start.insert(a.start.begin(), a.start.end());
 
     for (auto it = a.grm.begin(); it != a.grm.end(); )
@@ -190,6 +246,12 @@ void RegexChecker::exec_iter_plus()
     grm_t a = stack_.back();
     stack_.pop_back();
 
+    if (is_empty(a))
+    {
+        stack_.push_back(a);
+        return;
+    }
+
     grm_t res = a;
 
     for (auto & it : a.grm)
@@ -218,6 +280,12 @@ void RegexChecker::exec_iter_star()
 
     grm_t a = stack_.back();
     stack_.pop_back();
+
+    if (is_empty(a))
+    {
+        stack_.push_back(a);
+        return;
+    }
 
     grm_t res = a;
 

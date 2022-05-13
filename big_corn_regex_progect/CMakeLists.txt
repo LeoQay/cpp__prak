@@ -10,7 +10,7 @@ add_executable(regex_exec B2.cpp
         left_grm_to_dfa.cpp left_grm_to_dfa.h
         delete_empty_rules.cpp delete_empty_rules.h
         global_typedef.h global_typedef.cpp
-        delete_bad.cpp delete_bad.h)
+        delete_bad.cpp delete_bad.h ../B/join.cpp)
 
 add_executable(test_regex test.cpp
         regex_parser.cpp regex_parser.h

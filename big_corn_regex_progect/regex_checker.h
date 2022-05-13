@@ -27,6 +27,8 @@ public:
     void exec_iter_star();
 
 private:
+    bool check_inside(Symbol cur_state, const std::string & str);
+
     static void process_grm(grm_t & grm);
 
     void build_dfa();
