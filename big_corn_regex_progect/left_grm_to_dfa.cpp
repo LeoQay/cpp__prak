@@ -5,7 +5,7 @@
 #include "left_grm_to_dfa.h"
 
 
-grm_t LeftDFAMgr::build_dfa(const grm_t & grm)
+void LeftDFAMgr::build_dfa(const grm_t & grm)
 {
     collect_terminals(grm);
 
@@ -18,10 +18,9 @@ grm_t LeftDFAMgr::build_dfa(const grm_t & grm)
         do_step(grm);
     }
 
-    convert_dfa_to_ds();
-
-
-    // i must return left dfa grm
+    get_new_names();
+    convert_dfa_to_grm();
+    collect_finite_not_terminals(grm);
 }
 
 
@@ -87,14 +86,6 @@ LeftDFAMgr::get_non_terminal_all_values(const grm_t & grm,
     return ret;
 }
 
-void LeftDFAMgr::convert_dfa_to_ds()
-{
-    for (auto & [dest, src] : dfa)
-    {
-        ds[src.first][src.second] = dest;
-    }
-}
-
 void LeftDFAMgr::collect_terminals(const grm_t & grm)
 {
     for (auto & rule : grm.grm)
@@ -105,6 +96,52 @@ void LeftDFAMgr::collect_terminals(const grm_t & grm)
             {
                 terminals.insert(sym);
             }
+        }
+    }
+}
+
+void LeftDFAMgr::convert_dfa_to_grm()
+{
+    for (auto & [left, right] : dfa)
+    {
+        sequence_t temp;
+        if (!(right.first.size() == 1 && right.first.arr[0] == Symbol(NOT_TERM, 0)))
+        {
+            temp.arr.push_back(new_names[right.first]);
+        }
+        temp.arr.push_back(right.second);
+
+        result.grm.emplace(new_names[left], temp);
+    }
+}
+
+void LeftDFAMgr::get_new_names()
+{
+    for (auto & nt : watched)
+    {
+        if (nt.arr.size() == 1)
+        {
+            new_names[nt] = nt.arr[0];
+        }
+        else
+        {
+            new_names[nt] = Symbol(NOT_TERM, Symbol::next_name());
+        }
+    }
+}
+
+void LeftDFAMgr::collect_finite_not_terminals(const grm_t & grm)
+{
+    for (auto & name : watched)
+    {
+        std::set<Symbol> sims(name.arr.begin(), name.arr.end());
+        std::vector<Symbol> temp;
+        std::set_intersection(sims.begin(), sims.end(),
+                              grm.start.begin(), grm.start.end(),
+                              std::inserter(temp, temp.begin()));
+        if (!temp.empty())
+        {
+            result.start.insert(new_names[name]);
         }
     }
 }

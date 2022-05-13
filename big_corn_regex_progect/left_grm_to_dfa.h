@@ -10,15 +10,15 @@
 
 using dfa_t = std::multimap<sequence_t, std::pair<sequence_t, Symbol>>;
 using dfa_rule_t = std::pair<sequence_t, Symbol>;
-using dfa_ds_t = std::map<sequence_t, std::map<Symbol, sequence_t>>;
 
 
 class LeftDFAMgr
 {
 public:
-    grm_t build_dfa(const grm_t & grm);
+    void build_dfa(const grm_t & grm);
+    grm_t result;
 private:
-    void convert_dfa_to_ds();
+    void convert_dfa_to_grm();
 
     void do_step(const grm_t & grm);
 
@@ -32,18 +32,21 @@ private:
 
     void collect_terminals(const grm_t & grm);
 
+    void get_new_names();
+
+    void collect_finite_not_terminals(const grm_t & grm);
+
     Symbol start = Symbol(NOT_TERM, 0);
 
     dfa_t dfa;
-    dfa_ds_t ds;
 
     // не терминалы или их последовательности
     // записываются сюда после просмотра
     std::set<sequence_t> watched;
+    std::map<sequence_t, Symbol> new_names;
+
     // очередь не терминалов на просмотр
     std::set<sequence_t> que;
-    // конечные не терминалы
-    std::set<sequence_t> finite;
 
     // терминалы
     std::set<Symbol> terminals;

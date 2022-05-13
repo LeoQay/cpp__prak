@@ -10,9 +10,9 @@
 grm_t g()
 {
     grm_t sm;
-    sm.start = Symbol(NOT_TERM, 'S');
-    sequence_t seq;
+    sm.start.emplace(NOT_TERM, 'S');
 
+    sequence_t seq;
     seq.arr.emplace_back(NOT_TERM, 'S');
     seq.arr.emplace_back(TERM, 'a');
     sm.grm.emplace(Symbol(NOT_TERM, 'S'), seq);

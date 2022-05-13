@@ -3,6 +3,7 @@
 
 
 #include <map>
+#include <set>
 #include <vector>
 
 
@@ -59,7 +60,7 @@ struct RightRuleContextFreeGrm
 
 struct ContextFreeGrm
 {
-    RightRuleContextFreeGrm start;
+    std::set<Symbol> start;
     std::multimap<Symbol, RightRuleContextFreeGrm> grm;
 };
 
